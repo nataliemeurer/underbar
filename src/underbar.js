@@ -8,6 +8,7 @@ var _ = {};
   // seem very useful, but remember it--if a function needs to provide an
   // iterator when the user does not pass one in, this will be handy.
   _.identity = function(val) {
+    return val;
   };
 
   /**
@@ -157,6 +158,9 @@ var _ = {};
   // Calls the method named by functionOrKey on each value in the list.
   // Note: you will nead to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    return _.map(collection, function(val) {
+      return (functionOrKey.apply ? functionOrKey || val : val[functionOrKey]).apply(val, args);
+    });
   };
 
   // Reduces an array or object to a single value by repetitively calling
