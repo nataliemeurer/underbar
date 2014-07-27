@@ -201,25 +201,30 @@ var _ = {};
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
-    var test = true;
-    _.each(collection, function(item){
-      if (iterator(item)==false){
-        test = false;
+    //couldn't figure out how to use reduce here... may revisit
+    return _.reduce(collection, function(resultFalse, item){
+      if (!resultFalse){
+        return false;
       }
-    });
-    return test;
+      return iterator(item) == true;
+    }, true);
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
-    var test = false;
-    _.each(collection, function(item){
-      if (iterator(item)==true){
-        test = true;
+    if (arguments.length == 1){
+      return true;
+    }
+
+    else{
+    return _.reduce(collection, function(oneMatched, item){
+      if (oneMatched){
+        return true;
       }
-    });
-    return test;
+      return iterator(item) == true;
+    }, false);
+  }
   };
 
 
@@ -242,10 +247,10 @@ var _ = {};
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
-    var args = Array.prototype.slice.call(arguments)
-    _.each(args, function(orig){
-      for (var item in orig) {
-          obj[item] = source[item];
+    var args = Array.prototype.slice.call(arguments, 1);
+    _.each(args, function(addition){
+      for (var item in addition) {
+          obj[item] = addition[item];
         }
       });
     return obj;
@@ -254,7 +259,18 @@ var _ = {};
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
-
+    var args = Array.prototype.slice.call(arguments, 1);
+    _.each(args, function(addition){
+      for (var item in addition) {
+          if (item in obj){
+            //do nothing in order to not overwrite values
+          }
+          else{
+            obj[item] = addition[item];
+          }
+        }
+      });
+    return obj;
   };
 
 
