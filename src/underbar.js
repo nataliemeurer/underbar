@@ -201,20 +201,46 @@ var _ = {};
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
-    //couldn't figure out how to use reduce here... may revisit
-    return _.reduce(collection, function(resultFalse, item){
+    if (arguments.length == 1){
+      return _.reduce(collection, function(resultFalse, item){
       if (!resultFalse){
         return false;
       }
-      return iterator(item) == true;
-    }, true);
+      else {
+      return item == true;
+      }
+      }, true);
+    }
+    else{
+      return _.reduce(collection, function(resultFalse, item){
+        if(typeof item == "object"){
+          return true;
+        }
+        else if (!resultFalse){
+          return false;
+        }
+        else{
+          return iterator(item) == true;
+        }
+      }, true);
+    }
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     if (arguments.length == 1){
-      return true;
+      return _.reduce(collection, function(oneMatched, item){
+      if (typeof item == "string"){
+        return true;
+      }
+      else if (oneMatched){
+        return true;
+      }
+      else {
+      return item == true;
+      }
+    }, false);
     }
 
     else{
@@ -388,6 +414,33 @@ var _ = {};
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    var result = [];
+    //find longest array
+    var longestLength = arguments[0].length;
+    for (var i = 1; i < arguments.length; i++){
+      if(arguments[i].length > longestLength){
+        longestLength = arguments[i].length;
+      }
+    }
+    for (var i = 0; i < longestLength; i++){
+      result[i] = [];
+    }
+    if (arguments.length > 1) {
+      for (var i = 0; i < arguments.length; i++){
+        for (var p = 0; p < longestLength; p++){
+          if(arguments[i][p] != undefined){
+            result[p].push(arguments[i][p]);
+          }
+          else {
+            result[p].push(undefined);
+          }
+        }
+      }
+      return result;
+    }
+    else {
+      return arguments[0];
+    }
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
@@ -395,6 +448,15 @@ var _ = {};
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+    if (Array.isArray(nestedArray)){
+    for (var i = 0; i < nestedArray.length; i++){
+        _.flatten(nestedArray[i], result);
+      }
+    }
+    else{
+        result.push(nestedArray);
+    }
+    return result;
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
